@@ -14,9 +14,13 @@ fun AnswerList(answers: List<String>, correctAnsIndex: Int) {
         item {
             answers.forEachIndexed { index, ans ->
                 if (index == correctAnsIndex) {
-                    AnswerItem(answerText = "$ans ---")
+                    AnswerItem(answerText = "$ans ---", onClick = {
+                        //todo
+                    })
                 } else {
-                    AnswerItem(answerText = ans)
+                    AnswerItem(answerText = ans, onClick = {
+                        //todo
+                    })
                 }
             }
         }

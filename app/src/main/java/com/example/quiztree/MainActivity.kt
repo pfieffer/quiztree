@@ -1,10 +1,12 @@
 package com.example.quiztree
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,20 +18,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.quiztree.data.local.QuizEntity
 import com.example.quiztree.ui.AnswerList
+import com.example.quiztree.ui.NameInput
 import com.example.quiztree.ui.QuizQuestion
 import com.example.quiztree.ui.theme.QuizTreeTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         mainViewModel.fetchQuizList()
+
         setContent {
             QuizTreeTheme {
                 // A surface container using the 'background' color from the theme
@@ -39,6 +47,17 @@ class MainActivity : ComponentActivity() {
                 ) {
                     HorizontalPager(
                         quizList = mainViewModel.quizFlow.collectAsState(initial = listOf()).value,
+                        onNameProvided = {
+                            if (it.isEmpty()) {
+                                Toast.makeText(
+                                    this,
+                                    "Please provide your name",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                mainViewModel.nameInput.postValue(it)
+                            }
+                        }
                     )
                 }
             }
@@ -51,38 +70,32 @@ class MainActivity : ComponentActivity() {
  * Stateful
  */
 @Composable
-fun HorizontalPager(quizList: List<QuizEntity>) {
-    val quizAnswerMaps = arrayListOf<Map<Int, List<String>>>()
+fun HorizontalPager(quizList: List<QuizEntity>, onNameProvided: (name: String) -> Unit) {
+    val quizAnswerMap = hashMapOf<Int, List<String>>()
     quizList.forEachIndexed { index, quizEntity ->
-        quizAnswerMaps.addAll(
-            listOf(
-                mapOf(
-                    Pair(
-                        index,
-                        listOf(
-                            quizEntity.correctAnswer,
-                            quizEntity.wrongAnswer3,
-                            quizEntity.wrongAnswer2,
-                            quizEntity.wrongAnswer1
-                        ).shuffled()
-                    )
-                )
-            )
-        )
+        quizAnswerMap[index] = listOf(
+            quizEntity.correctAnswer,
+            quizEntity.wrongAnswer3,
+            quizEntity.wrongAnswer2,
+            quizEntity.wrongAnswer1
+        ).shuffled()
     }
     val correctAnswerIndices = arrayListOf<Int>()
-    quizAnswerMaps.forEachIndexed { index, map ->
-        map.forEach {
-            val correctAns = it.value.find { ansString ->
-                ansString == quizList[index].correctAnswer
-            }
-            correctAnswerIndices.add(it.value.indexOf(correctAns))
+    // correct
+    quizList.forEachIndexed { index, quizEntity ->
+        quizAnswerMap[index]?.let { innerList ->
+            correctAnswerIndices.add(
+                innerList.indexOf(
+                    quizEntity.correctAnswer
+                )
+            )
         }
     }
     HorizontalPager(
         quizQuestions = quizList.map { it.question },
-        quizAnswers = quizAnswerMaps,
-        correctAnswerIndices = correctAnswerIndices
+        quizAnswers = quizAnswerMap,
+        correctAnswerIndices = correctAnswerIndices,
+        onNameProvided = onNameProvided
     )
 }
 
@@ -93,22 +106,40 @@ fun HorizontalPager(quizList: List<QuizEntity>) {
 @Composable
 fun HorizontalPager(
     quizQuestions: List<String>,
-    quizAnswers: List<Map<Int, List<String>>>,
-    correctAnswerIndices: List<Int>
+    quizAnswers: Map<Int, List<String>>,
+    correctAnswerIndices: List<Int>,
+    onNameProvided: (name: String) -> Unit
 ) {
     val pagerState = rememberPagerState()
+    val coroutineScope = rememberCoroutineScope()
+
     androidx.compose.foundation.pager.HorizontalPager(
         pageCount = quizQuestions.count()
-//                + 2
-        ,
+                + 2,
         state = pagerState,
         userScrollEnabled = true
     ) {
-//        if (pagerState.currentPage == 0) {
-//            //todo: Show name input screen
-//            Log.i("On page first", "Show screen to input name")
-//            return@HorizontalPager
-//        }
+        if (pagerState.currentPage == 0) {
+            Box {
+                Column(
+                    Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        NameInput(onDoneClicked = {
+                            onNameProvided(it)
+                            if (it.isNotEmpty()) {
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(1)
+                                }
+                            }
+                        })
+                    }
+                }
+            }
+            return@HorizontalPager
+        }
 //        if (pagerState.currentPage == quizQuestions.size) {
 //            //todo: Show score on last page
 //            Log.i("On page last", "Show score to the user")
@@ -124,7 +155,7 @@ fun HorizontalPager(
                     QuizQuestion(quizQuestions[pagerState.currentPage])
                 }
                 Row {
-                    quizAnswers[pagerState.currentPage][pagerState.currentPage]?.let { answers ->
+                    quizAnswers[pagerState.currentPage]?.let { answers ->
                         AnswerList(
                             answers = answers,
                             correctAnsIndex = correctAnswerIndices[pagerState.currentPage]

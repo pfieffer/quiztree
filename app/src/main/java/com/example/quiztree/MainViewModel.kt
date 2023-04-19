@@ -2,6 +2,7 @@ package com.example.quiztree
 
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quiztree.data.local.QuizEntity
@@ -16,6 +17,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val quizRepository: QuizRepository
 ) : ViewModel() {
+    val nameInput = MutableLiveData<String>()
 
     val quizMLD = MediatorLiveData<DataResource<List<QuizEntity>>>()
     fun fetchQuizList() {

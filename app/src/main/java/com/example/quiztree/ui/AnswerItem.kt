@@ -1,8 +1,8 @@
 package com.example.quiztree.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -18,12 +18,18 @@ import com.example.quiztree.ui.theme.Typography
  * Stateless composable
  */
 @Composable
-fun AnswerItem(answerText: String) {
+fun AnswerItem(answerText: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = Color.Yellow)
             .padding(10.dp)
+            .clickable(
+                enabled = true,
+                onClick = {
+                    onClick()
+                }
+            )
     ) {
         QuizTreeTheme {
             Text(text = answerText, style = Typography.bodyLarge)
@@ -35,6 +41,6 @@ fun AnswerItem(answerText: String) {
 @Composable
 fun AnswerItemPreview() {
     QuizTreeTheme {
-        AnswerItem("Franklin D. Roosevelt")
+        AnswerItem("Franklin D. Roosevelt", onClick = {})
     }
 }
