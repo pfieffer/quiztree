@@ -3,44 +3,64 @@ package com.example.quiztree
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.quiztree.ui.theme.QuizTreeTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val mainViewModel: MainViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainViewModel.fetchQuizList()
         setContent {
             QuizTreeTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.background,
                 ) {
-                    Greeting("Android")
+                    QuizQuestion(mainViewModel = mainViewModel)
                 }
             }
         }
     }
 }
 
+/**
+ * Stateful composable
+ */
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun QuizQuestion(mainViewModel: MainViewModel) {
+    val quizList = mainViewModel.quizFlow.collectAsState(initial = listOf())
+    quizList.value.forEach {
+        QuizQuestion(questionText = it.question)
+    }
+}
+
+/**
+ * Stateless composable
+ */
+@Composable
+fun QuizQuestion(questionText: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Hello $name!",
+        text = questionText,
         modifier = modifier
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun QuizQuestionPreview() {
     QuizTreeTheme {
-        Greeting("Android")
+        QuizQuestion("Who was the first lady president on France?")
     }
 }
