@@ -33,7 +33,7 @@ fun AnswerListPreview() {
     QuizTreeTheme {
         AnswerList(
             answers = listOf("Franklin D. Roosevelt", "Lady Gaga", "Rihanna", "Anne Frank"),
-            correctAnsIndex = 1
+            correctAnsIndex = 2
         )
     }
 }

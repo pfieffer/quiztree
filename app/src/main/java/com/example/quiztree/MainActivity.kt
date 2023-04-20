@@ -10,9 +10,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -26,6 +29,7 @@ import com.example.quiztree.data.local.QuizEntity
 import com.example.quiztree.ui.AnswerList
 import com.example.quiztree.ui.NameInput
 import com.example.quiztree.ui.QuizQuestion
+import com.example.quiztree.ui.Timer
 import com.example.quiztree.ui.theme.QuizTreeTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -33,6 +37,8 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
+
+    @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,10 +48,25 @@ class MainActivity : ComponentActivity() {
             QuizTreeTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 0.dp),
                     color = MaterialTheme.colorScheme.background,
                 ) {
-                    HorizontalPager(
+                    val coroutineScope = rememberCoroutineScope()
+                    val pagerState = rememberPagerState()
+
+                    if (pagerState.currentPage in 1..10){
+                        Row {
+                            Timer(onTimerComplete = {
+                                // Navigate to last screen on Timer Complete
+                                coroutineScope.launch {
+                                    pagerState.animateScrollToPage(11)
+                                }
+                            })
+                        }
+                    }
+                    QuizPager(
                         quizList = mainViewModel.quizFlow.collectAsState(initial = listOf()).value,
                         onNameProvided = {
                             if (it.isEmpty()) {
@@ -57,7 +78,8 @@ class MainActivity : ComponentActivity() {
                             } else {
                                 mainViewModel.nameInput.postValue(it)
                             }
-                        }
+                        },
+                        pagerState = pagerState
                     )
                 }
             }
@@ -69,8 +91,13 @@ class MainActivity : ComponentActivity() {
 /**
  * Stateful
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HorizontalPager(quizList: List<QuizEntity>, onNameProvided: (name: String) -> Unit) {
+fun QuizPager(
+    quizList: List<QuizEntity>,
+    onNameProvided: (name: String) -> Unit,
+    pagerState: PagerState
+) {
     val quizAnswerMap = hashMapOf<Int, List<String>>()
     quizList.forEachIndexed { index, quizEntity ->
         quizAnswerMap[index] = listOf(
@@ -91,11 +118,12 @@ fun HorizontalPager(quizList: List<QuizEntity>, onNameProvided: (name: String) -
             )
         }
     }
-    HorizontalPager(
+    QuizPager(
         quizQuestions = quizList.map { it.question },
         quizAnswers = quizAnswerMap,
         correctAnswerIndices = correctAnswerIndices,
-        onNameProvided = onNameProvided
+        onNameProvided = onNameProvided,
+        pagerState = pagerState
     )
 }
 
@@ -104,16 +132,16 @@ fun HorizontalPager(quizList: List<QuizEntity>, onNameProvided: (name: String) -
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HorizontalPager(
+fun QuizPager(
     quizQuestions: List<String>,
     quizAnswers: Map<Int, List<String>>,
     correctAnswerIndices: List<Int>,
-    onNameProvided: (name: String) -> Unit
+    onNameProvided: (name: String) -> Unit,
+    pagerState: PagerState
 ) {
-    val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
 
-    androidx.compose.foundation.pager.HorizontalPager(
+    HorizontalPager(
         pageCount = quizQuestions.count()
                 + 2,
         state = pagerState,
@@ -148,13 +176,20 @@ fun HorizontalPager(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp)
+                .fillMaxHeight(),
+            contentAlignment = Alignment.Center
         ) {
             Column {
-                Row {
+                Row(
+                    modifier = Modifier
+                        .padding(top = 32.dp)
+                ) {
                     QuizQuestion(quizQuestions[pagerState.currentPage - 1])
                 }
-                Row {
+                Row(
+                    modifier = Modifier
+                        .padding(top = 32.dp)
+                ) {
                     quizAnswers[pagerState.currentPage - 1]?.let { answers ->
                         AnswerList(
                             answers = answers,

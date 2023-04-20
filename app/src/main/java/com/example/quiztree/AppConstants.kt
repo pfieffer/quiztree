@@ -15,4 +15,8 @@ object AppConstants {
     const val QUESTIONS_AMOUNT = 10
 
     const val DB_NAME = "quiz_database"
+
+    enum class TimeUnit {
+        SEC, MIN
+    }
 }

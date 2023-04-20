@@ -22,6 +22,9 @@ val Typography = Typography(
         lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
+    headlineLarge = TextStyle(
+        fontFamily = FontFamily.SansSerif
+    ),
     /* Other default text styles to override
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
