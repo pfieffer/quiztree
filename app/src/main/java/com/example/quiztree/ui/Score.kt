@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ProgressIndicatorDefaults
@@ -28,7 +29,7 @@ import com.example.quiztree.ui.theme.Typography
 import com.example.quiztree.ui.theme.orange
 
 @Composable
-fun Score(totalScoreOutOfTen: Int, name: String) {
+fun Score(totalScoreOutOfTen: Int, name: String, onPlayAgainClicked: () -> Unit) {
     Box {
         Column {
             Row(modifier = Modifier.align(CenterHorizontally)) {
@@ -69,6 +70,16 @@ fun Score(totalScoreOutOfTen: Int, name: String) {
                     }
                 }
             }
+            Row(
+                modifier = Modifier
+                    .align(CenterHorizontally)
+                    .padding(top = 32.dp)
+            ) {
+                Button(onClick = {
+                    onPlayAgainClicked() }) {
+                    Text(text = "Take Another Shot")
+                }
+            }
         }
     }
 }
@@ -95,6 +106,6 @@ fun ScoreCircularProgress(progress: Float) {
 @Composable
 fun ScorePreview() {
     QuizTreeTheme {
-        Score(totalScoreOutOfTen = 7, name = "Evan")
+        Score(totalScoreOutOfTen = 7, name = "Evan", onPlayAgainClicked = {})
     }
 }

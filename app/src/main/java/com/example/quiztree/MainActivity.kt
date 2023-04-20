@@ -32,8 +32,11 @@ import com.example.quiztree.ui.QuizQuestion
 import com.example.quiztree.ui.Score
 import com.example.quiztree.ui.Timer
 import com.example.quiztree.ui.theme.QuizTreeTheme
+import com.example.quiztree.utils.DataResource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.net.UnknownHostException
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -42,8 +45,6 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        mainViewModel.fetchQuizList()
 
         setContent {
             QuizTreeTheme {
@@ -62,7 +63,7 @@ class MainActivity : ComponentActivity() {
                             Timer(onTimerComplete = {
                                 // Navigate to last screen on Timer Complete
                                 coroutineScope.launch {
-                                    pagerState.animateScrollToPage(11)
+                                    pagerState.scrollToPage(11)
                                 }
                             })
                         }
@@ -86,8 +87,39 @@ class MainActivity : ComponentActivity() {
                             val lastScore = mainViewModel.liveScoreLD.value ?: 0
                             mainViewModel.liveScoreLD.postValue(lastScore.inc())
                         },
-                        playerName = mainViewModel.nameInput.value.orEmpty()
+                        playerName = mainViewModel.nameInput.value.orEmpty(),
+                        onPlayAgainClicked = {
+                            mainViewModel.fetchQuizList()
+                            mainViewModel.liveScoreLD.postValue(0)
+                            coroutineScope.launch {
+                                delay(700L)
+                                pagerState.scrollToPage(1)
+                            }
+                        }
                     )
+                }
+            }
+        }
+
+        with(mainViewModel) {
+            fetchQuizList()
+
+            quizMLD.observe(this@MainActivity) {
+                when (it) {
+                    is DataResource.Error -> {
+                        if (it.exception is UnknownHostException) {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Sorry but you appear to be offline",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        } else {
+                            Toast.makeText(this@MainActivity, it.message, Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    is DataResource.Loading -> {}
+                    is DataResource.Success -> {}
                 }
             }
         }
@@ -106,7 +138,8 @@ fun QuizPager(
     pagerState: PagerState,
     totalScore: Int,
     incrementScore: () -> Unit,
-    playerName: String
+    playerName: String,
+    onPlayAgainClicked: () -> Unit
 ) {
     val quizAnswerMap = hashMapOf<Int, List<String>>()
     quizList.forEachIndexed { index, quizEntity ->
@@ -136,7 +169,8 @@ fun QuizPager(
         pagerState = pagerState,
         totalScore = totalScore,
         incrementScore = incrementScore,
-        playerName = playerName
+        playerName = playerName,
+        onPlayAgainClicked = onPlayAgainClicked
     )
 }
 
@@ -153,7 +187,8 @@ fun QuizPager(
     pagerState: PagerState,
     totalScore: Int,
     incrementScore: () -> Unit,
-    playerName: String
+    playerName: String,
+    onPlayAgainClicked: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -175,7 +210,7 @@ fun QuizPager(
                             onNameProvided(it)
                             if (it.isNotEmpty()) {
                                 coroutineScope.launch {
-                                    pagerState.animateScrollToPage(1)
+                                    pagerState.scrollToPage(1)
                                 }
                             }
                         })
@@ -193,7 +228,13 @@ fun QuizPager(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Score(totalScoreOutOfTen = totalScore, name = playerName)
+                        Score(
+                            totalScoreOutOfTen = totalScore,
+                            name = playerName,
+                            onPlayAgainClicked = {
+                                onPlayAgainClicked()
+                            }
+                        )
                     }
                 }
             }
@@ -224,7 +265,7 @@ fun QuizPager(
                                 incrementScore()
                             }
                             coroutineScope.launch {
-                                pagerState.animateScrollToPage(pagerState.currentPage.inc())
+                                pagerState.scrollToPage(pagerState.currentPage.inc())
                             }
                         }
                     }

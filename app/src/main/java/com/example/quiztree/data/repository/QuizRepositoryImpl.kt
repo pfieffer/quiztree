@@ -49,7 +49,7 @@ class QuizRepositoryImpl(
             } else {
                 DataResource.Error(
                     exception = e,
-                    message = e.message ?: "Something went wrong",
+                    message = e.message ?: "Sorry. Something went wrong",
                     code = null
                 )
             }
