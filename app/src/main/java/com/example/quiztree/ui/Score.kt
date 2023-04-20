@@ -30,10 +30,23 @@ import com.example.quiztree.ui.theme.orange
 
 @Composable
 fun Score(totalScoreOutOfTen: Int, name: String, onPlayAgainClicked: () -> Unit) {
+    val encouragementText = when (totalScoreOutOfTen) {
+        in (0..3) -> {
+            "You can do better, $name!"
+        }
+
+        in (4..6) -> {
+            "Lets aim higher, $name!"
+        }
+
+        else -> {
+            "Well played, $name"
+        }
+    }
     Box {
         Column {
             Row(modifier = Modifier.align(CenterHorizontally)) {
-                Text(text = "Well played, $name!", style = Typography.titleLarge)
+                Text(text = encouragementText, style = Typography.titleLarge)
             }
             Row(modifier = Modifier.padding(top = 32.dp)) {
                 Card(
@@ -76,7 +89,8 @@ fun Score(totalScoreOutOfTen: Int, name: String, onPlayAgainClicked: () -> Unit)
                     .padding(top = 32.dp)
             ) {
                 Button(onClick = {
-                    onPlayAgainClicked() }) {
+                    onPlayAgainClicked()
+                }) {
                     Text(text = "Take Another Shot")
                 }
             }
