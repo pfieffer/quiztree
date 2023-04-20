@@ -152,13 +152,13 @@ fun HorizontalPager(
         ) {
             Column {
                 Row {
-                    QuizQuestion(quizQuestions[pagerState.currentPage])
+                    QuizQuestion(quizQuestions[pagerState.currentPage - 1])
                 }
                 Row {
-                    quizAnswers[pagerState.currentPage]?.let { answers ->
+                    quizAnswers[pagerState.currentPage - 1]?.let { answers ->
                         AnswerList(
                             answers = answers,
-                            correctAnsIndex = correctAnswerIndices[pagerState.currentPage]
+                            correctAnsIndex = correctAnswerIndices[pagerState.currentPage - 1]
                         )
                     }
                 }
