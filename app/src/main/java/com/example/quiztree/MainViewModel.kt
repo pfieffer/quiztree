@@ -28,4 +28,6 @@ class MainViewModel @Inject constructor(
     }
 
     val quizFlow = quizRepository.quizListFlow()
+
+    val liveScoreLD = MutableLiveData<Int>(0)
 }

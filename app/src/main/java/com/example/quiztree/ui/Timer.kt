@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.quiztree.AppConstants
 import com.example.quiztree.ui.theme.QuizTreeTheme
 import com.example.quiztree.ui.theme.Typography
 import kotlinx.coroutines.delay
@@ -22,7 +23,7 @@ import kotlinx.coroutines.isActive
 
 @Composable
 fun Timer(onTimerComplete: () -> Unit) {
-    val time = timer(initialMillis = 120_000L)
+    val time = timer(initialMillis = AppConstants.TOTAL_TIME_ALLOWED_MILLIS)
     val seconds = time.value / 1000L
     val minRemaining = seconds / 60
     val secondsRemaining = seconds % 60
@@ -34,19 +35,19 @@ fun Timer(onTimerComplete: () -> Unit) {
         Text(
             text = String.format("%02d", minRemaining),
             modifier = Modifier.padding(10.dp),
-            color = if (seconds <= 30) Color.Red else Color.Black,
+            color = if (seconds <= AppConstants.HURRY_UP_TIME_SECONDS) Color.Red else Color.Black,
             style = Typography.titleLarge
         )
         Text(
             text = ":",
             modifier = Modifier.padding(10.dp),
-            color = if (seconds <= 30) Color.Red else Color.Black,
+            color = if (seconds <= AppConstants.HURRY_UP_TIME_SECONDS) Color.Red else Color.Black,
             style = Typography.titleLarge
         )
         Text(
             text = String.format("%02d", secondsRemaining),
             modifier = Modifier.padding(10.dp),
-            color = if (seconds <= 30) Color.Red else Color.Black,
+            color = if (seconds <= AppConstants.HURRY_UP_TIME_SECONDS) Color.Red else Color.Black,
             style = Typography.titleLarge
         )
     }

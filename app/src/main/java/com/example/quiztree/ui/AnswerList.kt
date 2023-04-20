@@ -9,19 +9,17 @@ import com.example.quiztree.ui.theme.QuizTreeTheme
  * Stateless composable
  */
 @Composable
-fun AnswerList(answers: List<String>, correctAnsIndex: Int) {
+fun AnswerList(
+    answers: List<String>,
+    onAnswerTapped: (ansIndex: Int) -> Unit
+) {
     LazyColumn {
         item {
             answers.forEachIndexed { index, ans ->
-                if (index == correctAnsIndex) {
-                    AnswerItem(answerText = "$ans ---", onClick = {
-                        //todo
-                    })
-                } else {
-                    AnswerItem(answerText = ans, onClick = {
-                        //todo
-                    })
-                }
+                AnswerItem(answerText = ans, onClick = {
+                    onAnswerTapped(index)
+
+                })
             }
         }
     }
@@ -32,8 +30,9 @@ fun AnswerList(answers: List<String>, correctAnsIndex: Int) {
 fun AnswerListPreview() {
     QuizTreeTheme {
         AnswerList(
-            answers = listOf("Franklin D. Roosevelt", "Lady Gaga", "Rihanna", "Anne Frank"),
-            correctAnsIndex = 2
-        )
+            answers = listOf("Franklin D. Roosevelt", "Lady Gaga", "Rihanna", "Anne Frank")
+        ) {
+
+        }
     }
 }

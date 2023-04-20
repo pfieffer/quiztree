@@ -29,6 +29,7 @@ import com.example.quiztree.data.local.QuizEntity
 import com.example.quiztree.ui.AnswerList
 import com.example.quiztree.ui.NameInput
 import com.example.quiztree.ui.QuizQuestion
+import com.example.quiztree.ui.Score
 import com.example.quiztree.ui.Timer
 import com.example.quiztree.ui.theme.QuizTreeTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,7 +57,7 @@ class MainActivity : ComponentActivity() {
                     val coroutineScope = rememberCoroutineScope()
                     val pagerState = rememberPagerState()
 
-                    if (pagerState.currentPage in 1..10){
+                    if (pagerState.currentPage in 1..10) {
                         Row {
                             Timer(onTimerComplete = {
                                 // Navigate to last screen on Timer Complete
@@ -79,7 +80,13 @@ class MainActivity : ComponentActivity() {
                                 mainViewModel.nameInput.postValue(it)
                             }
                         },
-                        pagerState = pagerState
+                        pagerState = pagerState,
+                        totalScore = mainViewModel.liveScoreLD.value ?: 0,
+                        incrementScore = {
+                            val lastScore = mainViewModel.liveScoreLD.value ?: 0
+                            mainViewModel.liveScoreLD.postValue(lastScore.inc())
+                        },
+                        playerName = mainViewModel.nameInput.value.orEmpty()
                     )
                 }
             }
@@ -96,7 +103,10 @@ class MainActivity : ComponentActivity() {
 fun QuizPager(
     quizList: List<QuizEntity>,
     onNameProvided: (name: String) -> Unit,
-    pagerState: PagerState
+    pagerState: PagerState,
+    totalScore: Int,
+    incrementScore: () -> Unit,
+    playerName: String
 ) {
     val quizAnswerMap = hashMapOf<Int, List<String>>()
     quizList.forEachIndexed { index, quizEntity ->
@@ -123,7 +133,10 @@ fun QuizPager(
         quizAnswers = quizAnswerMap,
         correctAnswerIndices = correctAnswerIndices,
         onNameProvided = onNameProvided,
-        pagerState = pagerState
+        pagerState = pagerState,
+        totalScore = totalScore,
+        incrementScore = incrementScore,
+        playerName = playerName
     )
 }
 
@@ -137,7 +150,10 @@ fun QuizPager(
     quizAnswers: Map<Int, List<String>>,
     correctAnswerIndices: List<Int>,
     onNameProvided: (name: String) -> Unit,
-    pagerState: PagerState
+    pagerState: PagerState,
+    totalScore: Int,
+    incrementScore: () -> Unit,
+    playerName: String
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -145,7 +161,7 @@ fun QuizPager(
         pageCount = quizQuestions.count()
                 + 2,
         state = pagerState,
-        userScrollEnabled = true
+        userScrollEnabled = false
     ) {
         if (pagerState.currentPage == 0) {
             Box {
@@ -168,11 +184,21 @@ fun QuizPager(
             }
             return@HorizontalPager
         }
-//        if (pagerState.currentPage == quizQuestions.size) {
-//            //todo: Show score on last page
-//            Log.i("On page last", "Show score to the user")
-//            return@HorizontalPager
-//        }
+        if (pagerState.currentPage == 11) {
+            //Show score on last page
+            Box {
+                Column(
+                    Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Score(totalScoreOutOfTen = totalScore, name = playerName)
+                    }
+                }
+            }
+            return@HorizontalPager
+        }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -192,9 +218,15 @@ fun QuizPager(
                 ) {
                     quizAnswers[pagerState.currentPage - 1]?.let { answers ->
                         AnswerList(
-                            answers = answers,
-                            correctAnsIndex = correctAnswerIndices[pagerState.currentPage - 1]
-                        )
+                            answers = answers
+                        ) { tappedIndex ->
+                            if (tappedIndex == correctAnswerIndices[pagerState.currentPage - 1]) {
+                                incrementScore()
+                            }
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(pagerState.currentPage.inc())
+                            }
+                        }
                     }
                 }
             }
