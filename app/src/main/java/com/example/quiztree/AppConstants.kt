@@ -1,14 +1,16 @@
 package com.example.quiztree
 
 object AppConstants {
-    const val BASE_URL = "https://opentdb.com/"
+    object Api{
+        const val BASE_URL = "https://opentdb.com/"
 
-    enum class QuestionType {
-        MULTIPLE {
-            override fun toString(): String = "multiple"
-        },
-        TRUE_FALSE {
-            override fun toString(): String = "boolean"
+        enum class QuestionType {
+            MULTIPLE {
+                override fun toString(): String = "multiple"
+            },
+            TRUE_FALSE {
+                override fun toString(): String = "boolean"
+            }
         }
     }
 

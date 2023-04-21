@@ -19,7 +19,7 @@ object NetworkModule {
     @Provides
     fun provideQuizApiServices(okHttpClient: OkHttpClient): QuizApiServices {
         val retrofit = Retrofit.Builder()
-            .baseUrl(AppConstants.BASE_URL)
+            .baseUrl(AppConstants.Api.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(
                 GsonConverterFactory.create(

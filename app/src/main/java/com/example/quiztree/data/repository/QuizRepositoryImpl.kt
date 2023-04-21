@@ -20,7 +20,7 @@ class QuizRepositoryImpl(
             val response =
                 quizApiServices.getQuizList(
                     amount = AppConstants.QUESTIONS_AMOUNT,
-                    type = AppConstants.QuestionType.MULTIPLE.toString()
+                    type = AppConstants.Api.QuestionType.MULTIPLE.toString()
                 )
             if (response.isSuccessful) {
                 withContext(Dispatchers.IO) {
