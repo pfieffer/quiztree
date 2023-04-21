@@ -1,5 +1,6 @@
 package com.example.quiztree.ui
 
+import android.text.Html
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +24,9 @@ import com.example.quiztree.ui.theme.orange
  * Stateless composable
  */
 @Composable
-fun QuizQuestion(questionText: String) {
+fun QuizQuestion(htmlEncodedQuestionText: String) {
+    val questionText =
+        Html.fromHtml(htmlEncodedQuestionText, Html.FROM_HTML_MODE_LEGACY).toString()
     Card(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.margin_padding_medium)),
         modifier = Modifier.fillMaxWidth(),

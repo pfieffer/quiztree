@@ -1,5 +1,6 @@
 package com.example.quiztree.ui
 
+import android.text.Html
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,7 +23,9 @@ import com.example.quiztree.ui.theme.orange
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnswerItem(answerText: String, onClick: () -> Unit) {
+fun AnswerItem(htmlEncodedAnswerText: String, onClick: () -> Unit) {
+    val answerText =
+        Html.fromHtml(htmlEncodedAnswerText, Html.FROM_HTML_MODE_LEGACY).toString()
     Card(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.margin_padding_medium)),
         colors = CardDefaults.cardColors(

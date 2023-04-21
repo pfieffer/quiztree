@@ -16,7 +16,7 @@ fun AnswerList(
     LazyColumn {
         item {
             answers.forEachIndexed { index, ans ->
-                AnswerItem(answerText = ans, onClick = {
+                AnswerItem(htmlEncodedAnswerText = ans, onClick = {
                     onAnswerTapped(index)
 
                 })

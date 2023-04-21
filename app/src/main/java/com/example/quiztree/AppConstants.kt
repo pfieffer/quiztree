@@ -14,7 +14,7 @@ object AppConstants {
         }
     }
 
-    const val QUESTIONS_AMOUNT = 10
+    const val QUESTIONS_AMOUNT_PER_ROUND = 10
 
     const val DB_NAME = "quiz_database"
 

@@ -19,7 +19,7 @@ class QuizRepositoryImpl(
         return try {
             val response =
                 quizApiServices.getQuizList(
-                    amount = AppConstants.QUESTIONS_AMOUNT,
+                    amount = AppConstants.QUESTIONS_AMOUNT_PER_ROUND,
                     type = AppConstants.Api.QuestionType.MULTIPLE.toString()
                 )
             if (response.isSuccessful) {
