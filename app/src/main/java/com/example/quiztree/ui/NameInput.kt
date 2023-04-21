@@ -17,8 +17,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import com.example.quiztree.R
 import com.example.quiztree.ui.theme.QuizTreeTheme
 import com.example.quiztree.ui.theme.Typography
 
@@ -26,14 +27,14 @@ import com.example.quiztree.ui.theme.Typography
 @Composable
 fun NameInput(onDoneClicked: (name: String) -> Unit) {
     var name by rememberSaveable { mutableStateOf("") }
-    Column(modifier = Modifier.padding(10.dp)) {
+    Column(modifier = Modifier.padding(dimensionResource(id = R.dimen.margin_padding_medium))) {
         Row(modifier = Modifier.align(alignment = Alignment.CenterHorizontally)) {
             Text(text = "Welcome", style = Typography.titleLarge)
         }
         Row(
             modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)
-                .padding(top = 10.dp)
+                .padding(top = dimensionResource(id = R.dimen.margin_padding_medium))
         ) {
             Text(text = "Hi there, What should we call you?")
         }
@@ -43,13 +44,13 @@ fun NameInput(onDoneClicked: (name: String) -> Unit) {
                 onValueChange = {
                     name = it
                 },
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.margin_padding_medium))
             )
         }
         Row(
             modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)
-                .padding(top = 10.dp)
+                .padding(top = dimensionResource(id = R.dimen.margin_padding_medium))
         ) {
             IconButton(onClick = {
                 onDoneClicked(name)

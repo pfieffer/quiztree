@@ -22,8 +22,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.quiztree.R
 import com.example.quiztree.ui.theme.QuizTreeTheme
 import com.example.quiztree.ui.theme.Typography
 import com.example.quiztree.ui.theme.orange
@@ -48,9 +50,14 @@ fun Score(totalScoreOutOfTen: Int, name: String, onPlayAgainClicked: () -> Unit)
             Row(modifier = Modifier.align(CenterHorizontally)) {
                 Text(text = encouragementText, style = Typography.titleLarge)
             }
-            Row(modifier = Modifier.padding(top = 32.dp)) {
+            Row(
+                modifier = Modifier.padding(
+                    top =
+                    dimensionResource(id = R.dimen.margin_padding_x_large)
+                )
+            ) {
                 Card(
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_medium)),
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
@@ -73,7 +80,10 @@ fun Score(totalScoreOutOfTen: Int, name: String, onPlayAgainClicked: () -> Unit)
                             )
                             Text(
                                 text = "Score : $totalScoreOutOfTen/10",
-                                modifier = Modifier.padding(start = 4.dp)
+                                modifier = Modifier.padding(
+                                    start =
+                                    dimensionResource(id = R.dimen.margin_padding_small)
+                                )
                             )
                         }
 
@@ -86,7 +96,7 @@ fun Score(totalScoreOutOfTen: Int, name: String, onPlayAgainClicked: () -> Unit)
             Row(
                 modifier = Modifier
                     .align(CenterHorizontally)
-                    .padding(top = 32.dp)
+                    .padding(top = dimensionResource(id = R.dimen.margin_padding_x_large))
             ) {
                 Button(onClick = {
                     onPlayAgainClicked()

@@ -7,12 +7,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import com.example.quiztree.R
 import com.example.quiztree.ui.theme.QuizTreeTheme
 import com.example.quiztree.ui.theme.Typography
 import com.example.quiztree.ui.theme.orange
@@ -24,16 +24,16 @@ import com.example.quiztree.ui.theme.orange
 @Composable
 fun AnswerItem(answerText: String, onClick: () -> Unit) {
     Card(
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.margin_padding_medium)),
         colors = CardDefaults.cardColors(
-            containerColor =  orange,
+            containerColor = orange,
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp),
+            .padding(top = dimensionResource(id = R.dimen.margin_padding_medium)),
         onClick = onClick
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(dimensionResource(id = R.dimen.margin_padding_large))) {
             Text(text = answerText, style = Typography.bodyLarge)
         }
     }

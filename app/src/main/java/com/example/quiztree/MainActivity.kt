@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import com.example.quiztree.AppConstants.QUESTIONS_AMOUNT
 import com.example.quiztree.data.local.QuizEntity
@@ -227,7 +228,7 @@ fun QuizPager(
             }
             return@HorizontalPager
         }
-        if (pagerState.currentPage == QUESTIONS_AMOUNT +1) {
+        if (pagerState.currentPage == QUESTIONS_AMOUNT + 1) {
             //Show score on last page
             Box {
                 Column(
@@ -257,13 +258,13 @@ fun QuizPager(
             Column {
                 Row(
                     modifier = Modifier
-                        .padding(top = 32.dp)
+                        .padding(top = dimensionResource(id = R.dimen.margin_padding_x_large))
                 ) {
                     QuizQuestion(quizQuestions[pagerState.currentPage - 1])
                 }
                 Row(
                     modifier = Modifier
-                        .padding(top = 32.dp)
+                        .padding(top = dimensionResource(id = R.dimen.margin_padding_x_large))
                 ) {
                     quizAnswers[pagerState.currentPage - 1]?.let { answers ->
                         AnswerList(
@@ -288,13 +289,13 @@ fun QuizPager(
             ) {
                 repeat(QUESTIONS_AMOUNT) { iteration ->
                     val color =
-                        if (pagerState.currentPage-1 == iteration) orange else Color.LightGray
+                        if (pagerState.currentPage - 1 == iteration) orange else Color.LightGray
                     Box(
                         modifier = Modifier
                             .padding(2.dp)
                             .clip(CircleShape)
                             .background(color)
-                            .size(16.dp)
+                            .size(dimensionResource(id = R.dimen.page_indicator_size))
                     )
                 }
             }

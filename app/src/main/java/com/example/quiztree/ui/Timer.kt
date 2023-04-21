@@ -13,9 +13,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.quiztree.AppConstants
+import com.example.quiztree.R
 import com.example.quiztree.ui.theme.QuizTreeTheme
 import com.example.quiztree.ui.theme.Typography
 import kotlinx.coroutines.delay
@@ -34,19 +36,19 @@ fun Timer(onTimerComplete: () -> Unit) {
     ) {
         Text(
             text = String.format("%02d", minRemaining),
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.margin_padding_medium)),
             color = if (seconds <= AppConstants.HURRY_UP_TIME_SECONDS) Color.Red else Color.Black,
             style = Typography.titleLarge
         )
         Text(
             text = ":",
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.margin_padding_medium)),
             color = if (seconds <= AppConstants.HURRY_UP_TIME_SECONDS) Color.Red else Color.Black,
             style = Typography.titleLarge
         )
         Text(
             text = String.format("%02d", secondsRemaining),
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.margin_padding_medium)),
             color = if (seconds <= AppConstants.HURRY_UP_TIME_SECONDS) Color.Red else Color.Black,
             style = Typography.titleLarge
         )
