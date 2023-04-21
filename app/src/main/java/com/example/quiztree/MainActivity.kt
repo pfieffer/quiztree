@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.quiztree.AppConstants.QUESTIONS_AMOUNT
 import com.example.quiztree.data.local.QuizEntity
 import com.example.quiztree.ui.AnswerList
 import com.example.quiztree.ui.NameInput
@@ -65,12 +66,12 @@ class MainActivity : ComponentActivity() {
                     val coroutineScope = rememberCoroutineScope()
                     val pagerState = rememberPagerState()
 
-                    if (pagerState.currentPage in 1..10) {
+                    if (pagerState.currentPage in 1..QUESTIONS_AMOUNT) {
                         Row {
                             Timer(onTimerComplete = {
                                 // Navigate to last screen on Timer Complete
                                 coroutineScope.launch {
-                                    pagerState.scrollToPage(11)
+                                    pagerState.scrollToPage(QUESTIONS_AMOUNT + 1)
                                 }
                             })
                         }
@@ -226,7 +227,7 @@ fun QuizPager(
             }
             return@HorizontalPager
         }
-        if (pagerState.currentPage == 11) {
+        if (pagerState.currentPage == QUESTIONS_AMOUNT +1) {
             //Show score on last page
             Box {
                 Column(
@@ -285,7 +286,7 @@ fun QuizPager(
                     .align(Alignment.BottomCenter),
                 horizontalArrangement = Arrangement.Center
             ) {
-                repeat(10) { iteration ->
+                repeat(QUESTIONS_AMOUNT) { iteration ->
                     val color =
                         if (pagerState.currentPage-1 == iteration) orange else Color.LightGray
                     Box(
