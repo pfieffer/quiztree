@@ -28,9 +28,6 @@ fun AnswerItem(htmlEncodedAnswerText: String, onClick: () -> Unit) {
         Html.fromHtml(htmlEncodedAnswerText, Html.FROM_HTML_MODE_LEGACY).toString()
     Card(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.margin_padding_medium)),
-        colors = CardDefaults.cardColors(
-            containerColor = orange,
-        ),
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = dimensionResource(id = R.dimen.margin_padding_medium)),

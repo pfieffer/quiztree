@@ -1,8 +1,12 @@
 package com.example.quiztree.ui
 
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,7 +31,11 @@ import com.example.quiztree.ui.theme.Typography
 @Composable
 fun NameInput(onDoneClicked: (name: String) -> Unit) {
     var name by rememberSaveable { mutableStateOf("") }
-    Column(modifier = Modifier.padding(dimensionResource(id = R.dimen.margin_padding_medium))) {
+    Column(
+        modifier = Modifier
+            .padding(dimensionResource(id = R.dimen.margin_padding_medium))
+            .verticalScroll(rememberScrollState())
+    ) {
         Row(modifier = Modifier.align(alignment = Alignment.CenterHorizontally)) {
             Text(text = "Welcome", style = Typography.titleLarge)
         }

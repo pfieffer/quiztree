@@ -29,10 +29,7 @@ fun QuizQuestion(htmlEncodedQuestionText: String) {
         Html.fromHtml(htmlEncodedQuestionText, Html.FROM_HTML_MODE_LEGACY).toString()
     Card(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.margin_padding_medium)),
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = orange,
-        )
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier

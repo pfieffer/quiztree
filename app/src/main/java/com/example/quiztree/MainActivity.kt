@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +22,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -30,7 +30,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.quiztree.AppConstants.QUESTIONS_AMOUNT_PER_ROUND
 import com.example.quiztree.data.local.QuizEntity
@@ -39,8 +41,8 @@ import com.example.quiztree.ui.NameInput
 import com.example.quiztree.ui.QuizQuestion
 import com.example.quiztree.ui.Score
 import com.example.quiztree.ui.Timer
+import com.example.quiztree.ui.theme.LightPrimary
 import com.example.quiztree.ui.theme.QuizTreeTheme
-import com.example.quiztree.ui.theme.orange
 import com.example.quiztree.utils.DataResource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -57,12 +59,17 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             QuizTreeTheme {
-                // A surface container using the 'background' color from the theme
+                Image(
+                    modifier = Modifier.fillMaxSize(),
+                    painter = painterResource(R.drawable.bg_orange),
+                    contentDescription = "background_image",
+                    contentScale = ContentScale.FillBounds
+                )
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 0.dp),
-                    color = MaterialTheme.colorScheme.background,
+                    color = Color.Transparent,
                 ) {
                     val coroutineScope = rememberCoroutineScope()
                     val pagerState = rememberPagerState()
@@ -209,7 +216,8 @@ fun QuizPager(
         if (pagerState.currentPage == 0) {
             Box {
                 Column(
-                    Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -231,7 +239,8 @@ fun QuizPager(
             //Show score on last page
             Box {
                 Column(
-                    Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -288,7 +297,7 @@ fun QuizPager(
             ) {
                 repeat(QUESTIONS_AMOUNT_PER_ROUND) { iteration ->
                     val color =
-                        if (pagerState.currentPage - 1 == iteration) orange else Color.LightGray
+                        if (pagerState.currentPage - 1 == iteration) LightPrimary else Color.LightGray
                     Box(
                         modifier = Modifier
                             .padding(2.dp)
