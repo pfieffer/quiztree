@@ -8,6 +8,8 @@ import com.example.quiztree.data.remote.QuizApiServices
 import com.example.quiztree.utils.DataResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 
@@ -24,7 +26,6 @@ class QuizRepositoryImpl(
                 )
             if (response.isSuccessful) {
                 withContext(Dispatchers.IO) {
-//                    quizDao.vacuumDb(SimpleSQLiteQuery("VACUUM"))
                     quizDao.deleteAll()
                 }
                 val quizList = arrayListOf<QuizEntity>()

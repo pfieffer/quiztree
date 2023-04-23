@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +36,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.quiztree.AppConstants.QUESTIONS_AMOUNT_PER_ROUND
-import com.example.quiztree.data.local.QuizEntity
 import com.example.quiztree.ui.AnswerList
 import com.example.quiztree.ui.NameInput
 import com.example.quiztree.ui.QuizQuestion
@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     QuizPager(
-                        quizList = mainViewModel.quizFlow.collectAsState(initial = listOf()).value,
+                        viewModel = mainViewModel,
                         onNameProvided = {
                             if (it.isEmpty()) {
                                 Toast.makeText(
@@ -103,16 +103,15 @@ class MainActivity : ComponentActivity() {
                             val lastScore = mainViewModel.liveScoreLD.value ?: 0
                             mainViewModel.liveScoreLD.postValue(lastScore.inc())
                         },
-                        playerName = mainViewModel.nameInput.value.orEmpty(),
-                        onPlayAgainClicked = {
-                            mainViewModel.fetchQuizList()
-                            mainViewModel.liveScoreLD.postValue(0)
-                            coroutineScope.launch {
-                                delay(700L)
-                                pagerState.scrollToPage(1)
-                            }
+                        playerName = mainViewModel.nameInput.value.orEmpty()
+                    ) {
+                        mainViewModel.fetchQuizList()
+                        mainViewModel.liveScoreLD.postValue(0)
+                        coroutineScope.launch {
+                            delay(700L)
+                            pagerState.scrollToPage(1)
                         }
-                    )
+                    }
                 }
             }
         }
@@ -149,7 +148,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun QuizPager(
-    quizList: List<QuizEntity>,
+    viewModel: MainViewModel,
     onNameProvided: (name: String) -> Unit,
     pagerState: PagerState,
     totalScore: Int,
@@ -157,8 +156,10 @@ fun QuizPager(
     playerName: String,
     onPlayAgainClicked: () -> Unit
 ) {
+    val quizListState by viewModel.quizFlow.collectAsState(initial = emptyList())
+
     val quizAnswerMap = hashMapOf<Int, List<String>>()
-    quizList.forEachIndexed { index, quizEntity ->
+    quizListState.forEachIndexed { index, quizEntity ->
         quizAnswerMap[index] = listOf(
             quizEntity.correctAnswer,
             quizEntity.wrongAnswer3,
@@ -167,7 +168,7 @@ fun QuizPager(
         ).shuffled()
     }
     val correctAnswerIndices = arrayListOf<Int>()
-    quizList.forEachIndexed { index, quizEntity ->
+    quizListState.forEachIndexed { index, quizEntity ->
         quizAnswerMap[index]?.let { innerList ->
             correctAnswerIndices.add(
                 innerList.indexOf(
@@ -177,7 +178,7 @@ fun QuizPager(
         }
     }
     QuizPager(
-        quizQuestions = quizList.map { it.question },
+        quizQuestions = quizListState.map { it.question },
         quizAnswers = quizAnswerMap,
         correctAnswerIndices = correctAnswerIndices,
         onNameProvided = onNameProvided,
@@ -289,7 +290,7 @@ fun QuizPager(
                 }
             }
             Row(
-                Modifier
+                modifier = Modifier
                     .height(50.dp)
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter),
