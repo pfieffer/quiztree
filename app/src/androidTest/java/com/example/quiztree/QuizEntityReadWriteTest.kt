@@ -7,7 +7,8 @@ import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.quiztree.data.local.QuizDao
 import com.example.quiztree.data.local.QuizDatabase
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.After
@@ -36,6 +37,7 @@ class QuizEntityReadWriteTest {
         db.close()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     @Throws(Exception::class)
     fun writeQuizListAndReadInList() = runTest {
@@ -43,11 +45,12 @@ class QuizEntityReadWriteTest {
         quizList.forEach {
             quizDao.insert(it)
         }
-        val allQuiz = quizDao.getAllQuiz().
-        assertThat(allQuiz[0].question, equalTo(quizList[0].question))
-        assertThat(allQuiz[0].correctAnswer, equalTo(quizList[0].correctAnswer))
-        assertThat(allQuiz[0].wrongAnswer1, equalTo(quizList[0].wrongAnswer1))
-        assertThat(allQuiz[0].wrongAnswer2, equalTo(quizList[0].wrongAnswer2))
-        assertThat(allQuiz[0].wrongAnswer3, equalTo(quizList[0].wrongAnswer3))
+        val allQuiz = quizDao.getAllQuiz().first()
+        val firstQuiz = allQuiz.first()
+        assertThat(firstQuiz.correctAnswer, equalTo(quizList[0].question))
+        assertThat(firstQuiz.correctAnswer, equalTo(quizList[0].correctAnswer))
+        assertThat(firstQuiz.wrongAnswer1, equalTo(quizList[0].wrongAnswer1))
+        assertThat(firstQuiz.wrongAnswer2, equalTo(quizList[0].wrongAnswer2))
+        assertThat(firstQuiz.wrongAnswer3, equalTo(quizList[0].wrongAnswer3))
     }
 }
